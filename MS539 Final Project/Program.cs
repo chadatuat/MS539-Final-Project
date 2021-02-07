@@ -2,7 +2,7 @@
 // UAT MS539 Final Project: Codename: Monkey Mayhem
 // a0.02
 // weekly goal for 2/7/21
-// 1) add list and array support (These were present in vuild a0.01
+// 1) add list and array support (These were present in build a0.01
 // 2) add string functions.  These are contained in the chat.cs file
 //
 // a0.01
