@@ -1,5 +1,10 @@
 ﻿// CWW 
 // UAT MS539 Final Project: Codename: Monkey Mayhem
+// a0.02
+// weekly goal for 2/7/21
+// 1) add list and array support (These were present in vuild a0.01
+// 2) add string functions.  These are contained in the chat.cs file
+//
 // a0.01
 // weekly goal for 1/31/21: 
 // 1) Menu items work
@@ -28,7 +33,7 @@ namespace MS539_Final_Project
         public static vsPlayer ovsPlayer;
         public static GameWindow oGameWindow;
         public static MainMonkey oMainMenu;
-        public static GameCore oGameCore = new GameCore();
+        public static GameCore oGameCore = new GameCore();        
 
         [STAThread]
         static void Main()

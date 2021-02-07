@@ -5,6 +5,9 @@
 // 
 // menu items working: save (meets criteria for weekly goal)
 // Exit/Quit
+//
+// Week 4: Added chat, enlarged map, added support for tile buttons to sense viable directions.
+// Chat has a list of unnacceptable words that will be altered if entered.  
 
 using Newtonsoft.Json;
 using System;
@@ -26,10 +29,11 @@ namespace MS539_Final_Project
 
         public static TileButton[,] oMapArray;
         private static Random _myRandom = new Random();
-        public static int iXSize = 7;
-        public static int iYSize = 3;
+        public static int iXSize = 10;
+        public static int iYSize = 7;
         public List<string> sColorList = new List<string> { "Green", "Yellow" };
         private System.Windows.Forms.SaveFileDialog oSaveFileDialog;
+        public Chat oThisChat = new Chat();
 
         public GameWindow()
         {
@@ -71,6 +75,8 @@ namespace MS539_Final_Project
             }
             // select the map color
             sColor = mapColor();
+            bool bIsViableMap = false;
+            // need to develop a do while loop to ensure that the map can be path'd
             for (int xPos = 0; xPos < iXSize; xPos++)                
             {
                 for (int yPos = 0; yPos < iYSize; yPos++)
@@ -79,25 +85,56 @@ namespace MS539_Final_Project
                     oMapArray[xPos, yPos].BackColor = System.Drawing.Color.Transparent;
                     oMapArray[xPos, yPos].Location = new System.Drawing.Point(12 + (xPos * 40), 60 + (yPos * 40));
                     oMapArray[xPos, yPos].Size = new System.Drawing.Size(40, 40);
-                    switch (_myRandom.Next(50) % 6)
+                    switch (_myRandom.Next(50) % 7)
                     {
                         case 0:
                             sImageName = "L.BMP";
+                            oMapArray[xPos, yPos].BNorthOpen = true;
+                            oMapArray[xPos, yPos].BSouthOpen = false;
+                            oMapArray[xPos, yPos].BEastOpen = true;
+                            oMapArray[xPos, yPos].BWestOpen = false;
                             break;
                         case 1:
                             sImageName = "L2.BMP";
+                            oMapArray[xPos, yPos].BNorthOpen = true;
+                            oMapArray[xPos, yPos].BSouthOpen = false;
+                            oMapArray[xPos, yPos].BEastOpen = false;
+                            oMapArray[xPos, yPos].BWestOpen = true;
                             break;
                         case 2:
                             sImageName = "L3.BMP";
+                            oMapArray[xPos, yPos].BNorthOpen = false;
+                            oMapArray[xPos, yPos].BSouthOpen = true;
+                            oMapArray[xPos, yPos].BEastOpen = false;
+                            oMapArray[xPos, yPos].BWestOpen = true;
                             break;
                         case 3:
                             sImageName = "L4.BMP";
+                            oMapArray[xPos, yPos].BNorthOpen = false;
+                            oMapArray[xPos, yPos].BSouthOpen = true;
+                            oMapArray[xPos, yPos].BEastOpen = true;
+                            oMapArray[xPos, yPos].BWestOpen = false;
                             break;
                         case 4:
                             sImageName = "ntos.BMP";
+                            oMapArray[xPos, yPos].BNorthOpen = true;
+                            oMapArray[xPos, yPos].BSouthOpen = true;
+                            oMapArray[xPos, yPos].BEastOpen = false;
+                            oMapArray[xPos, yPos].BWestOpen = false;
                             break;
                         case 5:
                             sImageName = "etow.BMP";
+                            oMapArray[xPos, yPos].BNorthOpen = false;
+                            oMapArray[xPos, yPos].BSouthOpen = false;
+                            oMapArray[xPos, yPos].BEastOpen = true;
+                            oMapArray[xPos, yPos].BWestOpen = true;
+                            break;
+                        case 6:
+                            sImageName = "solid.BMP";
+                            oMapArray[xPos, yPos].BNorthOpen = false;
+                            oMapArray[xPos, yPos].BSouthOpen = false;
+                            oMapArray[xPos, yPos].BEastOpen = false;
+                            oMapArray[xPos, yPos].BWestOpen = false;
                             break;
                     }
                     // catch the first and last items to ensure that they are castles
@@ -185,6 +222,16 @@ namespace MS539_Final_Project
 
                 MessageBox.Show("File saved");
             }
+        }
+
+        public void sendButton_Click(object sender, EventArgs e)
+        {
+            string sThisText = this.chatInputTextBox.Text;
+            this.chatInputTextBox.Text = "";
+            if (sThisText.Length > 0)
+            {
+                this.chatRichTextBox.Text = oThisChat.AddChatLine(sThisText);
+            }            
         }
     }
 }
