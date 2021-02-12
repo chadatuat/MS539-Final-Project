@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Building.cs" />
     <Compile Include="Chat.cs" />
     <Compile Include="GameCore.cs" />
     <Compile Include="GameWindow.cs">
@@ -68,6 +69,8 @@
     <Compile Include="TileButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Unit.cs" />
+    <Compile Include="UnitType.cs" />
     <Compile Include="vsCPU.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,5 +1,12 @@
 ﻿// CWW 
 // UAT MS539 Final Project: Codename: Monkey Mayhem
+// a0.03
+// weekly goar for 2/14/21
+// 1) At least 3 classes.  This has already been met.
+// 2) 2 inherited classes: Unit inherits from UnityType and TileButton inherits a Windows Form Button class
+// 3) Encapsulation - see Unit and UnitType classes.
+// 4) Polymorphism - see the GameCore RemoveObjects.  It can remove a Unit or a Building.
+//
 // a0.02
 // weekly goal for 2/7/21
 // 1) add list and array support (These were present in build a0.01
@@ -33,7 +40,8 @@ namespace MS539_Final_Project
         public static vsPlayer ovsPlayer;
         public static GameWindow oGameWindow;
         public static MainMonkey oMainMenu;
-        public static GameCore oGameCore = new GameCore();        
+        public static GameCore oGameCore = new GameCore();       
+        //public static Queue<>;
 
         [STAThread]
         static void Main()

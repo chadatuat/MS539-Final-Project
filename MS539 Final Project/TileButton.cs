@@ -53,5 +53,15 @@ namespace MS539_Final_Project
         public bool BSouthOpen { get => bSouthOpen; set => bSouthOpen = value; }
         public bool BEastOpen { get => bEastOpen; set => bEastOpen = value; }
         public bool BWestOpen { get => bWestOpen; set => bWestOpen = value; }
+
+        public new void MouseClick(Object sender, EventArgs e)
+        {
+            MessageBox.Show("HA!");
+        }
+
+        public void OnClick(Object sender, EventArgs e)
+        {
+            MessageBox.Show("HA!");
+        }
     }
 }
