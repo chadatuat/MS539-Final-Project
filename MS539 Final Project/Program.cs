@@ -1,7 +1,7 @@
 ﻿// CWW 
 // UAT MS539 Final Project: Codename: Monkey Mayhem
 // a0.03
-// weekly goar for 2/14/21
+// weekly goal for 2/14/21
 // 1) At least 3 classes.  This has already been met.
 // 2) 2 inherited classes: Unit inherits from UnityType and TileButton inherits a Windows Form Button class
 // 3) Encapsulation - see Unit and UnitType classes.
