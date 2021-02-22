@@ -64,6 +64,7 @@
     <Compile Include="MainMonkey.Designer.cs">
       <DependentUpon>MainMonkey.cs</DependentUpon>
     </Compile>
+    <Compile Include="PathBuilder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TileButton.cs">

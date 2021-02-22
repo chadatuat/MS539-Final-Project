@@ -19,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -34,6 +35,8 @@ namespace MS539_Final_Project
         public List<string> sColorList = new List<string> { "Green", "Yellow" };
         private System.Windows.Forms.SaveFileDialog oSaveFileDialog;
         public Chat oThisChat = new Chat();
+        public string sColor;
+        public static List<string> lCoords;        
 
         public GameWindow()
         {
@@ -60,7 +63,7 @@ namespace MS539_Final_Project
 
         public void FinishTileButton(TileButton oThisTileButton)
         {
-  
+            oThisTileButton.Location = new System.Drawing.Point(12 + (oThisTileButton.IXPos * 40), 60 + (oThisTileButton.IYPos * 40));
             oThisTileButton.BackColor = System.Drawing.Color.Transparent;            
             oThisTileButton.Size = new System.Drawing.Size(40, 40);
             oThisTileButton.Image = Image.FromFile(oThisTileButton.SImage);
@@ -78,81 +81,190 @@ namespace MS539_Final_Project
 
         public TileButton NewRandomTile(int iXpos, int iYpos, string sColor)
         {
+            int iIndex = 0;
             string sImageName = "";
+            int iPrevX = 0;
+            int iPrevY = 0;
+            int iNextX = 0;
+            int iNextY = 0;
+            string[] sSplitter;
             TileButton oThisTileButton = new TileButton();
-            bool bIsOutsideBounds = false;
-            do
+            oThisTileButton.BNorthOpen = false;
+            oThisTileButton.BSouthOpen = false;
+            oThisTileButton.BEastOpen = false;
+            oThisTileButton.BWestOpen = false;
+            oThisTileButton.Location = new System.Drawing.Point(12 + (iXpos * 40), 60 + (iYpos * 40));
+            iIndex = lCoords.IndexOf(PathBuilder.MakeCoords(iXpos, iYpos));            
+            if ((iIndex > 0) && (iIndex < (lCoords.Count - 2)))
             {
-                bIsOutsideBounds = false;
-                oThisTileButton.Location = new System.Drawing.Point(12 + (iXpos * 40), 60 + (iYpos * 40));
-                switch (_myRandom.Next(50) % 7)
+                // path is made, use what is in the pathbuilder.
+                // ignore first and last items
+                // find neighbors
+                sImageName = "solid.BMP";
+                //lCoords.RemoveAt(iIndex - 1);
+                sSplitter = lCoords[iIndex - 1].Split(',');
+                iPrevX = Int32.Parse(sSplitter[0]);
+                iPrevY = Int32.Parse(sSplitter[1]);
+                sSplitter = lCoords[iIndex + 1].Split(',');
+                iNextX = Int32.Parse(sSplitter[0]);
+                iNextY = Int32.Parse(sSplitter[1]);
+                // previous tile had x-axis (left/right) movement
+                if (iPrevY == iYpos)
                 {
-                    case 0:
-                        sImageName = "L.BMP";
-                        oThisTileButton.BNorthOpen = true;
-                        oThisTileButton.BSouthOpen = false;
-                        oThisTileButton.BEastOpen = true;
-                        oThisTileButton.BWestOpen = false;
-                        break;
-                    case 1:
-                        sImageName = "L2.BMP";
-                        oThisTileButton.BNorthOpen = true;
-                        oThisTileButton.BSouthOpen = false;
-                        oThisTileButton.BEastOpen = false;
+                    if (iPrevX > iXpos)
+                    {
+                        // east must be open
+                        oThisTileButton.BEastOpen = true;                        
+                    } else
+                    {
+                        // west must be open
                         oThisTileButton.BWestOpen = true;
-                        break;
-                    case 2:
-                        sImageName = "L3.BMP";
-                        oThisTileButton.BNorthOpen = false;
-                        oThisTileButton.BSouthOpen = true;
-                        oThisTileButton.BEastOpen = false;
-                        oThisTileButton.BWestOpen = true;
-                        break;
-                    case 3:
-                        sImageName = "L4.BMP";
-                        oThisTileButton.BNorthOpen = false;
-                        oThisTileButton.BSouthOpen = true;
-                        oThisTileButton.BEastOpen = true;
-                        oThisTileButton.BWestOpen = false;
-                        break;
-                    case 4:
-                        sImageName = "ntos.BMP";
-                        oThisTileButton.BNorthOpen = true;
-                        oThisTileButton.BSouthOpen = true;
-                        oThisTileButton.BEastOpen = false;
-                        oThisTileButton.BWestOpen = false;
-                        break;
-                    case 5:
-                        sImageName = "etow.BMP";
-                        oThisTileButton.BNorthOpen = false;
-                        oThisTileButton.BSouthOpen = false;
-                        oThisTileButton.BEastOpen = true;
-                        oThisTileButton.BWestOpen = true;
-                        break;
-                    case 6:
-                        sImageName = "solid.BMP";
-                        oThisTileButton.BNorthOpen = false;
-                        oThisTileButton.BSouthOpen = false;
-                        oThisTileButton.BEastOpen = false;
-                        oThisTileButton.BWestOpen = false;
-                        break;
+                    }
                 }
-                // catch the first and last items to ensure that they are castles
-                if (((iXpos == 0) && (iYpos == 0)) || ((iXpos == (iXSize - 1)) && (iYpos == (iYSize - 1))))
+                else
                 {
-                    sImageName = "castle.bmp";
-                    oThisTileButton.BNorthOpen = false;
-                    oThisTileButton.BSouthOpen = false;
-                    oThisTileButton.BEastOpen = false;
-                    oThisTileButton.BWestOpen = false;
+                    if (iPrevX > iXpos)
+                    {
+                        // south must be open
+                        oThisTileButton.BSouthOpen = true;
+                    }
+                    else
+                    {
+                        // north must be open
+                        oThisTileButton.BNorthOpen = true;
+                    }
                 }
-                oThisTileButton.IXPos = iXpos + 1;
-                oThisTileButton.IYPos = iYpos + 1;
-                string sPath = @"..\..\Resources\Images\" + sColor + @"\" + sImageName;
-                oThisTileButton.SImage = sPath;
-                bIsOutsideBounds = Program.oGameCore.TileGoesOutOfBounds(oThisTileButton, iXSize, iYSize);
-            } while (bIsOutsideBounds == false);
-            
+                if (iNextY == iYpos)
+                {
+                    if (iNextX > iXpos)
+                    {
+                        // east must be open
+                        oThisTileButton.BEastOpen = true;
+                    }
+                    else
+                    {
+                        // west must be open
+                        oThisTileButton.BWestOpen = true;
+                    }
+                }
+                else
+                {
+                    if (iNextX > iXpos)
+                    {
+                        // south must be open
+                        oThisTileButton.BSouthOpen = true;
+                    }
+                    else
+                    {
+                        // north must be open
+                        oThisTileButton.BNorthOpen = true;
+                    }
+                }
+
+                if ((oThisTileButton.BNorthOpen) && (oThisTileButton.BEastOpen))
+                {
+                    sImageName = "L.BMP";
+                }
+
+                if ((oThisTileButton.BNorthOpen) && (oThisTileButton.BWestOpen))
+                {
+                    sImageName = "L2.BMP";
+                }
+
+                if ((oThisTileButton.BSouthOpen) && (oThisTileButton.BWestOpen))
+                {
+                    sImageName = "L3.BMP";
+                }
+
+                if ((oThisTileButton.BSouthOpen) && (oThisTileButton.BEastOpen))
+                {
+                    sImageName = "L4.BMP";
+                }
+
+                if ((oThisTileButton.BSouthOpen) && (oThisTileButton.BNorthOpen))
+                {
+                    sImageName = "ntos.BMP";
+                }
+
+                if ((oThisTileButton.BWestOpen) && (oThisTileButton.BEastOpen))
+                {
+                    sImageName = "etow.BMP";
+                }
+
+            }
+            else
+            {
+                sImageName = "solid.BMP";
+
+            }
+            //switch (_myRandom.Next(50) % 7)
+            //{
+            //    case 0:
+            //        sImageName = "L.BMP";
+            //        oThisTileButton.BNorthOpen = true;
+            //        oThisTileButton.BSouthOpen = false;
+            //        oThisTileButton.BEastOpen = true;
+            //        oThisTileButton.BWestOpen = false;
+            //        break;
+            //    case 1:
+            //        sImageName = "L2.BMP";
+            //        oThisTileButton.BNorthOpen = true;
+            //        oThisTileButton.BSouthOpen = false;
+            //        oThisTileButton.BEastOpen = false;
+            //        oThisTileButton.BWestOpen = true;
+            //        break;
+            //    case 2:
+            //        sImageName = "L3.BMP";
+            //        oThisTileButton.BNorthOpen = false;
+            //        oThisTileButton.BSouthOpen = true;
+            //        oThisTileButton.BEastOpen = false;
+            //        oThisTileButton.BWestOpen = true;
+            //        break;
+            //    case 3:
+            //        sImageName = "L4.BMP";
+            //        oThisTileButton.BNorthOpen = false;
+            //        oThisTileButton.BSouthOpen = true;
+            //        oThisTileButton.BEastOpen = true;
+            //        oThisTileButton.BWestOpen = false;
+            //        break;
+            //    case 4:
+            //        sImageName = "ntos.BMP";
+            //        oThisTileButton.BNorthOpen = true;
+            //        oThisTileButton.BSouthOpen = true;
+            //        oThisTileButton.BEastOpen = false;
+            //        oThisTileButton.BWestOpen = false;
+            //        break;
+            //    case 5:
+            //        sImageName = "etow.BMP";
+            //        oThisTileButton.BNorthOpen = false;
+            //        oThisTileButton.BSouthOpen = false;
+            //        oThisTileButton.BEastOpen = true;
+            //        oThisTileButton.BWestOpen = true;
+            //        break;
+            //    case 6:
+            //        sImageName = "solid.BMP";
+            //        oThisTileButton.BNorthOpen = false;
+            //        oThisTileButton.BSouthOpen = false;
+            //        oThisTileButton.BEastOpen = false;
+            //        oThisTileButton.BWestOpen = false;
+            //        break;
+            //}
+            // catch the first and last items to ensure that they are castles
+            if (((iXpos == 0) && (iYpos == 0)) || ((iXpos == (iXSize - 1)) && (iYpos == (iYSize - 1))))
+            {
+                sImageName = "castle.bmp";
+                if ((iXpos == 0) && (iYpos == 0))
+                {
+
+                } else
+                {
+
+                }
+            }
+            oThisTileButton.IXPos = iXpos;
+            oThisTileButton.IYPos = iYpos;
+            string sPath = @"..\..\Resources\Images\" + sColor + @"\" + sImageName;
+            oThisTileButton.SImage = sPath;
             return oThisTileButton;
         }
         private void Map_Click(object sender, EventArgs e)
@@ -176,42 +288,9 @@ namespace MS539_Final_Project
             MessageBox.Show(sStats);
         }
 
-        public void drawMap()
-        {            
-            // determine if a map exists, if so, unload it.
-            if (oMapArray == null)
-            {
-                oMapArray = new TileButton[iXSize, iYSize];
-            }
-            else
-            {
-                unloadMap();
-            }
-
-            // select the map color
-            string sColor = "";
-            sColor = mapColor();
-
-            bool bIsViableMap = true;
-            // need to develop a do while loop to ensure that the map can be path'd
-            do
-            {
-                //unloadMap();
-                for (int xPos = 0; xPos < iXSize; xPos++)
-                {
-                    for (int yPos = 0; yPos < iYSize; yPos++)
-                    {
-                        oMapArray[xPos, yPos] = NewRandomTile(xPos, yPos, sColor);
-                    }
-                }                
-                if(Program.oGameCore.IsViableMap(oMapArray, iXSize, iYSize))
-                {
-                    bIsViableMap = false;
-                }   else
-                {
-                    bIsViableMap = true;
-                }          
-            } while (bIsViableMap);
+        
+        public void CompleteMap()
+        {
             for (int xPos = 0; xPos < iXSize; xPos++)
             {
                 for (int yPos = 0; yPos < iYSize; yPos++)
@@ -219,7 +298,32 @@ namespace MS539_Final_Project
                     FinishTileButton(oMapArray[xPos, yPos]);
                     Controls.Add(oMapArray[xPos, yPos]);
                 }
+            }      
+        }
+
+        public void drawMap()
+        {    
+            this.sColor = mapColor();           
+            //determine if a map exists, if so, unload it.  Otherwise, initialize a fresh oMapArray.
+            if (oMapArray == null)
+            {
+                // do nothing
+                oMapArray = new TileButton[iXSize, iYSize];
             }
+            else
+            {
+                unloadMap();
+            }
+            lCoords = PathBuilder.MakeViableMap(iXSize, iYSize);
+
+            for (int xPos = 0; xPos < iXSize; xPos++)
+            {
+                for (int yPos = 0; yPos < iYSize; yPos++)
+                {
+                    oMapArray[xPos, yPos] = NewRandomTile(xPos, yPos, sColor);
+                }
+            }
+            CompleteMap();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -296,3 +400,4 @@ namespace MS539_Final_Project
         }
     }
 }
+
